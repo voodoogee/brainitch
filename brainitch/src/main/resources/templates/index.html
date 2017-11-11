@@ -1,14 +1,169 @@
 <!DOCTYPE html>  
-<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org">
-	<meta charset="utf-8">
-    <head>  
-        <title>Hello World!</title>
-        <link th:href="@{/resources/static/bootstrap/bootstrap-3.3.7-dist/css/bootstrap.min.css}" rel="stylesheet" />
-    </head>  
-    <body>  
-        <h1 th:inline="text">Hello.v.2</h1>  
-        <p th:text="${hello}"></p>
-        grid length:<input type="text" name="horizon"/><br/>
-       	grid height:<input type="text" name="vertical"/>
+<html xmlns:th="http://www.thymeleaf.org">
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <head>
+		<meta charset="UTF-8" />
+		<title th:text="${title}"></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	</head>
+    <body>
+    	<h1>nonogram solver</h1>
+    	<div id="main">
+			<div>grid size:</div>
+			horizon size:<input type="number" value="10" id="horizon" min="10" max="30"/>
+			vertical size:<input type="number" value="10" id="vertical" min="10" max="30"/>
+			<input type="button" value="generate" id="generate" onclick="generate();"/>
+			<div id="grid"></div>
+			<div id="enter"></div>
+		</div>
     </body>
+    <script type="text/javascript">
+    	var horizon = $("#horizon").val();
+		var vertical = $("#vertical").val();
+    	function generate(){
+    		var result="<table>";
+    		result += "<tr>";
+    		result += "<td></td>";
+    		result += "<td></td>";
+    		/*<![CDATA[*/
+    		for(var i = 0; i < horizon; i++){
+    			result += "<td>";
+    			result += "<div id='htip"+i+"'></div>";
+    			result += "</td>";
+    		}
+    		/*]]>*/
+    		result += "</tr>";
+    		result += "<tr>";
+    		result += "<td></td>";
+    		result += "<td></td>";
+    		/*<![CDATA[*/
+    		for(var i = 0; i < horizon; i++){
+    			result += "<td>";
+    			result += "<input type='button' value='tic' onclick='tickNumber(" + vertical + "," + i+ ",0);'/>";
+    			result += "</td>";
+    		}
+    		/*]]>*/
+    		result += "</tr>";
+    		/*<![CDATA[*/
+    		for(var i = 0; i < vertical; i++){
+    			result += "<tr>";
+    			result += "<td>";
+    			result += "<span id='vtip"+i+"'></span>";
+    			result += "</td>";
+    			result += "<td>";
+    			result += "<input type='button' value='toc' onclick='tickNumber(" + horizon + "," + i+ ",1);'/>";
+    			result += "</td>";
+    			for(var j = 0; j < horizon; j++){
+    				result += "<td id='" + i +"-"+ j +"'></td>";
+    			}
+    			result += "</tr>";
+    		}
+    		/*]]>*/
+			result += "</table>";
+    		$("#grid").html(result);
+    		
+    	}
+    	function tickNumber(size,index,direction){
+    		var result = "";
+    		var tempArray = new Array();
+    		/*<![CDATA[*/
+    		if(direction == 0){
+	    		if($("#htip"+index).children().length != 0){
+	    			for(var i = 0; i < $("#htip"+index).children().length; i++){
+	    				tempArray.push(parseInt($("#htip"+index).children().eq(i).text()));
+	    			}
+	    		}
+    		}else{
+    			if($("#vtip"+index).text().split(",").length != 0){
+    				for(var i = 0; i < $("#vtip"+index).text().split(",").length - 1; i++){
+	    				tempArray.push(parseInt($("#vtip"+index).text().split(",")[i]));
+	    			}
+	    		}
+    		}
+			for(var i = 0; i < size; i++){
+				var digit = "";
+				if(i < 9){
+					digit = "0" + (i + 1);
+				}else{
+					digit = i + 1;
+				}
+				if($.inArray(i+1,tempArray) != -1){
+					result += digit + "<input type='checkbox' id='" +(i + 1)+ "'"
+							+" checked='checked' value = '"+(i + 1)+"' onclick='checkSum("+size+");'/>";
+				} else {
+					result += digit + "<input type='checkbox' id='" +(i + 1)+ "'"
+							+" value = '"+(i + 1)+"' onclick='checkSum("+size+");'/>";
+				}
+    			if(i%5 == 4){
+    				result += "<br/>"
+    			}
+    		}
+    		/*]]>*/
+    		
+    		$("#enter").html(result);
+    		$('#enter').dialog({
+				autoOpen: true,
+				modal:true,
+				width: 250,
+				buttons: {
+					"confirm": function() { 
+						confirm(index,direction);
+						$(this).dialog("close"); 
+					}, 
+					"cancel": function() { 
+						$(this).dialog("close"); 
+					} 
+				}
+			});
+			checkSum(size);
+    	}
+    	
+    	function checkSum(size){
+    		var sum = 0;
+    		$("input:checkbox").each(function(){
+    			if($(this).is(':checked')){
+    				sum += parseInt($(this).val()) + 1;
+    			}
+    		});
+    		/*<![CDATA[*/
+    		$("input:checkbox").each(function(){
+    			if(parseInt($(this).val()) <= (size - sum)){
+    				$(this).removeAttr("disabled");
+    			}else{
+    				if(!$(this).is(':checked')){
+    					$(this).attr("disabled","disabled");
+    				}
+    			}
+    		});
+    		/*]]>*/
+    	}
+    	
+    	function sortNumber(a,b){
+			return a - b
+		}
+    	
+    	function confirm(index,direction){
+    		if(direction == 0){
+    			$("#htip"+index).html("");
+    		}else{
+    			$("#vtip"+index).html("");
+    		}
+    		
+    		/*<![CDATA[*/
+    		$("input:checkbox").each(function(){
+    			if($(this).is(':checked')){
+	    			if(direction == 0){
+	    				$("#htip"+index).append("<div>"+$(this).val()+"</div>");
+	    			}else{
+	    				$("#vtip"+index).append($(this).val()+",");
+	    			}
+    			}
+			});
+    		/*]]>*/
+    	}
+    </script>
 </html>
