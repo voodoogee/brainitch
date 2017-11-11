@@ -4,39 +4,31 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Cell {
-	private int possibleSize;
-	private Set<Integer> possibleDigit = new HashSet<>();
-	private int finalResult = 0;
+	public int possibleLength;
+	public Set<Integer> possibleDigit = new HashSet<>();
+	public int finalResult;
 	
 	public Cell() {
-		possibleSize = 9;
+		possibleLength = 9;
 		for (int i = 1; i <= 9; i++) {
 			possibleDigit.add(i);
 		}
 	}
 	
-	public int getPossibleSize() {
-		return possibleSize;
-	}
-
-	public int getFinalResult() {
-		return finalResult;
-	}
-
 	public Cell(int finalResult) {
-		possibleSize = 1;
+		possibleLength = 1;
 		this.finalResult = finalResult;
 	}
 	
 	public boolean remove(int wrongDigit) {
 		boolean result = possibleDigit.remove(wrongDigit);
-		possibleSize -= 1;
+		possibleLength -= 1;
 		return result;
 	}
 	
 	public boolean ensure() {
 		boolean result = false;
-		if(possibleSize == 1) {
+		if(possibleLength == 1) {
 			finalResult = possibleDigit.iterator().next();
 			result = true;
 		}

@@ -1,16 +1,17 @@
 package com.voodoo.brainitch.picross.solver;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.springframework.stereotype.Component;
 
 import com.voodoo.brainitch.picross.entity.Model;
 
 public class Solver {
 	public int[][] hTipNums;
 	public int[][] vTipNums;
-	public Model hModel;
-	public Model vModel;
+	private Model hModel;
+	private Model vModel;
 	
 	public Solver(int[][] hTipNums, int[][] vTipNums) {
 		this.hTipNums = hTipNums;
@@ -147,7 +148,9 @@ public class Solver {
 	}
 	
 	public static void main(String[] args) {
-		/*//此模式需pencilSolve
+		/*
+		 * 
+		//此模式需pencilSolve
 		int[][] hTipNums = new int[][] {
 			{3,2},{1,1,1},{1,2},{1,2},{1,1},{3,2},{1,1,1},{4,1,2},{1,1,2},{2,1,1,1}
 		};
@@ -156,19 +159,18 @@ public class Solver {
 		};*/
 		
 		int[][] hTipNums = new int[][] {
-			{5,5},{4,5},{3,3,5},{4,2,2,3},{3,3,1,1,1},
-			{6,6},{8,3,3,5},{2,11,1,5},{2,1,11,5},{5,13,2},
-			{3,1,11,3,1},{2,2,10,5},{4,8,5},{3,1,5,1,5},{1,5,3,5},
-			{1,4,6,1,4},{2,2,3,3,2},{3,10,5},{4,8,1,3},{5,5,2,2},
-			{6,1,5},{7,3,5},{8,3,5},{9,2,5},{10,1,5}
+			{3},{4,1},{4,3,5},{6,5,1},{1,2,2},
+			{1,2,3,1},{3,2,1,1},{1,2,1,1},{1,1,1,2,1,1},{1,1,1,3,1},
+			{1,1,2,2},{2,1,7},{1,5,2,1},{6,3},{8,2,1},
+			{4,2,2,1},{4,1,2,2},{2,3,1,3},{1,1,5},{1,1,2}
 		};
+		
 		int[][] vTipNums = new int[][] {
-			{10},{3,9},{6,8},{1,1,5,7},{3,3,3,6},
-			{5,1,3,5},{1,4,2,1,4},{1,5,2,3},{9,3,2},{1,9,4,1},
-			{3,9,3},{2,9,4},{8,1,3,1},{8,5,2},{1,8,5,4},
-			{2,6,6,2},{3,1,8,2},{4,2,3,1,3},{5,1,2,3},{1,1,1},
-			{9,6,8},{4,4,6,1,6},{4,4,6,2,5},{3,5,14},{3,11,9}
+			{2,2,1,1,3},{2,2,2,4},{2,1,1,5},{4,1,4,1},{1,1,1,2,4,2},
+			{5,1,4,2},{3,1,2,4,1},{4,6,1},{1,1,1,5,1,1,2},{2,1,2,1,1,4},
+			{2,1,1,1,5,1},{3,2,1,5,3},{1,2,3,1,1},{1,1,2,2,2},{1,2,3}
 		};
+		
 		Solver solver = new Solver(hTipNums, vTipNums);
 		solver.solve();
 	}

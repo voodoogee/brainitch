@@ -1,0 +1,14 @@
+<!DOCTYPE html>  
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org">
+	<meta charset="utf-8">
+    <head>  
+        <title>Hello World!</title>
+        <link th:href="@{/resources/static/bootstrap/bootstrap-3.3.7-dist/css/bootstrap.min.css}" rel="stylesheet" />
+    </head>  
+    <body>  
+        <h1 th:inline="text">Hello.v.2</h1>  
+        <p th:text="${hello}"></p>
+        grid length:<input type="text" name="horizon"/><br/>
+       	grid height:<input type="text" name="vertical"/>
+    </body>
+</html>
