@@ -18,7 +18,11 @@
 			vertical size:<input type="number" value="10" id="vertical" min="10" max="30"/>
 			<input type="button" value="generate" id="generate" onclick="generate();"/>
 			<div id="grid"></div>
-			<div id="enter"></div>
+			<div id="enter">
+				<div id = "chosen"></div>
+				<div id = "select"></div>
+			</div>
+			<input type="button" value="submit" id="submit" onclick="submit();"/>
 		</div>
     </body>
     <script type="text/javascript">
@@ -68,7 +72,7 @@
     		
     	}
     	function tickNumber(size,index,direction){
-    		var result = "";
+    		var chosen = "";
     		var tempArray = new Array();
     		/*<![CDATA[*/
     		if(direction == 0){
@@ -84,27 +88,27 @@
 	    			}
 	    		}
     		}
+    		for(var i = 0; i < tempArray.length; i++){
+    			chosen += "<input type='button' id='" +tempArray[i]+ "'"
+						+" value = '"+tempArray[i]+"' onclick='removeNum(this.value,"+size+");'/>";
+				if(i%5 == 4){
+    				chosen += "<br/>"
+    			}
+    		}
+    		$("#chosen").html(chosen);
+    		var select = "";
 			for(var i = 0; i < size; i++){
 				var digit = "";
-				if(i < 9){
-					digit = "0" + (i + 1);
-				}else{
-					digit = i + 1;
-				}
-				if($.inArray(i+1,tempArray) != -1){
-					result += digit + "<input type='checkbox' id='" +(i + 1)+ "'"
-							+" checked='checked' value = '"+(i + 1)+"' onclick='checkSum("+size+");'/>";
-				} else {
-					result += digit + "<input type='checkbox' id='" +(i + 1)+ "'"
-							+" value = '"+(i + 1)+"' onclick='checkSum("+size+");'/>";
-				}
+				select += "<input type='button' value = '"+(i + 1)
+						+"' onclick='addNum(this.value,"+size+");'/>";
+				
     			if(i%5 == 4){
-    				result += "<br/>"
+    				select += "<br/>"
     			}
     		}
     		/*]]>*/
     		
-    		$("#enter").html(result);
+    		$("#select").html(select);
     		$('#enter').dialog({
 				autoOpen: true,
 				modal:true,
@@ -121,22 +125,29 @@
 			});
 			checkSum(size);
     	}
+    	function removeNum(value,size){
+    		$("#"+value).remove();
+    		checkSum(size);
+    	}
     	
+    	function addNum(value,size){
+    		/*<![CDATA[*/
+    		var appender = "<input type='button' id='"+value+"' value='"+value+"' onclick='removeNum(this.value,"+size+");'/>";
+    		$("#chosen").append(appender);
+			checkSum(size);
+			/*]]>*/
+    	}
     	function checkSum(size){
     		var sum = 0;
-    		$("input:checkbox").each(function(){
-    			if($(this).is(':checked')){
-    				sum += parseInt($(this).val()) + 1;
-    			}
+    		$("#chosen").children().each(function(){
+    			sum += parseInt($(this).val()) + 1;
     		});
     		/*<![CDATA[*/
-    		$("input:checkbox").each(function(){
+    		$("#select").children().each(function(){
     			if(parseInt($(this).val()) <= (size - sum)){
     				$(this).removeAttr("disabled");
     			}else{
-    				if(!$(this).is(':checked')){
-    					$(this).attr("disabled","disabled");
-    				}
+    				$(this).attr("disabled","disabled");
     			}
     		});
     		/*]]>*/
@@ -154,16 +165,19 @@
     		}
     		
     		/*<![CDATA[*/
-    		$("input:checkbox").each(function(){
-    			if($(this).is(':checked')){
-	    			if(direction == 0){
-	    				$("#htip"+index).append("<div>"+$(this).val()+"</div>");
-	    			}else{
-	    				$("#vtip"+index).append($(this).val()+",");
-	    			}
+    		$("#chosen").children().each(function(){
+    			if(direction == 0){
+    				$("#htip"+index).append("<div>"+$(this).val()+"</div>");
+    			}else{
+    				$("#vtip"+index).append($(this).val()+",");
     			}
+
 			});
     		/*]]>*/
+    	}
+    	
+    	function submit(){
+    		
     	}
     </script>
 </html>
