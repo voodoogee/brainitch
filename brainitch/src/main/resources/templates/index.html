@@ -19,16 +19,17 @@
 			<input type="button" value="generate" id="generate" onclick="generate();"/>
 			<div id="grid"></div>
 			<div id="enter">
-				<div id = "chosen"></div>
+				<div style="height:30px; margin-bottom:2px;" id = "chosen"></div>
 				<div id = "select"></div>
 			</div>
-			<input type="button" value="submit" id="submit" onclick="submit();"/>
+			<input type="button" value="submit" id="submit" hidden="hidden" onclick="submit();"/>
 		</div>
     </body>
     <script type="text/javascript">
-    	var horizon = $("#horizon").val();
-		var vertical = $("#vertical").val();
     	function generate(){
+    		var horizon = $("#horizon").val();
+			var vertical = $("#vertical").val();
+    		$("#grid").html("");
     		var result="<table>";
     		result += "<tr>";
     		result += "<td></td>";
@@ -47,7 +48,7 @@
     		/*<![CDATA[*/
     		for(var i = 0; i < horizon; i++){
     			result += "<td>";
-    			result += "<input type='button' value='tic' onclick='tickNumber(" + vertical + "," + i+ ",0);'/>";
+    			result += "<input type='button' style='margin:2px;' value='tic' onclick='tickNumber(" + vertical + "," + i+ ",0);'/>";
     			result += "</td>";
     		}
     		/*]]>*/
@@ -59,7 +60,7 @@
     			result += "<span id='vtip"+i+"'></span>";
     			result += "</td>";
     			result += "<td>";
-    			result += "<input type='button' value='toc' onclick='tickNumber(" + horizon + "," + i+ ",1);'/>";
+    			result += "<input type='button' style='margin:2px;' value='toc' onclick='tickNumber(" + horizon + "," + i+ ",1);'/>";
     			result += "</td>";
     			for(var j = 0; j < horizon; j++){
     				result += "<td id='" + i +"-"+ j +"'></td>";
@@ -69,9 +70,10 @@
     		/*]]>*/
 			result += "</table>";
     		$("#grid").html(result);
-    		
+    		$("#submit").prop("hidden",false);
     	}
     	function tickNumber(size,index,direction){
+    		$("#clear").prop("hidden",false);
     		var chosen = "";
     		var tempArray = new Array();
     		/*<![CDATA[*/
@@ -89,7 +91,7 @@
 	    		}
     		}
     		for(var i = 0; i < tempArray.length; i++){
-    			chosen += "<input type='button' id='" +tempArray[i]+ "'"
+    			chosen += "<input type='button' style='margin:2px;' id='" +tempArray[i]+ "'"
 						+" value = '"+tempArray[i]+"' onclick='removeNum(this.value,"+size+");'/>";
 				if(i%5 == 4){
     				chosen += "<br/>"
@@ -99,7 +101,7 @@
     		var select = "";
 			for(var i = 0; i < size; i++){
 				var digit = "";
-				select += "<input type='button' value = '"+(i + 1)
+				select += "<input type='button' style='margin:2px;' value = '"+(i + 1)
 						+"' onclick='addNum(this.value,"+size+");'/>";
 				
     			if(i%5 == 4){
@@ -109,18 +111,24 @@
     		/*]]>*/
     		
     		$("#select").html(select);
+    		$('#enter').keydown(function(event){ 
+				//alert("Key: " + event.which);
+			});
     		$('#enter').dialog({
 				autoOpen: true,
 				modal:true,
-				width: 250,
+				width: 300,
 				buttons: {
+					"clear": function() {
+						clearChosen();
+					},
 					"confirm": function() { 
 						confirm(index,direction);
 						$(this).dialog("close"); 
 					}, 
 					"cancel": function() { 
 						$(this).dialog("close"); 
-					} 
+					}
 				}
 			});
 			checkSum(size);
@@ -132,16 +140,25 @@
     	
     	function addNum(value,size){
     		/*<![CDATA[*/
-    		var appender = "<input type='button' id='"+value+"' value='"+value+"' onclick='removeNum(this.value,"+size+");'/>";
+    		var appender = "<input type='button' style='margin:2px;' id='"+value+"' value='"+value+"' onclick='removeNum(this.value,"+size+");'/>";
     		$("#chosen").append(appender);
 			checkSum(size);
 			/*]]>*/
     	}
+    	function clearChosen(){
+    		$("#chosen").html("");
+    		$("#select").children().each(function(){
+				$(this).removeAttr("disabled");
+    		});
+    	}
     	function checkSum(size){
     		var sum = 0;
     		$("#chosen").children().each(function(){
-    			sum += parseInt($(this).val()) + 1;
+    			if($(this).val() != ""){
+    				sum += parseInt($(this).val()) + 1;
+    			}
     		});
+    		
     		/*<![CDATA[*/
     		$("#select").children().each(function(){
     			if(parseInt($(this).val()) <= (size - sum)){
@@ -166,18 +183,67 @@
     		
     		/*<![CDATA[*/
     		$("#chosen").children().each(function(){
+    			
     			if(direction == 0){
     				$("#htip"+index).append("<div>"+$(this).val()+"</div>");
     			}else{
-    				$("#vtip"+index).append($(this).val()+",");
+    				if($(this).val() != ""){
+   						$("#vtip"+index).append($(this).val()+",");
+    				}
     			}
-
 			});
     		/*]]>*/
     	}
     	
     	function submit(){
+    		var htips = "[";
+    		var vtips = "[";
+    		var data = "";
+    		$("div[id^=htip]").each(function(){
+    			htips += "[";
+    			var onetip = "";
+    			if($(this).children().length == 0){
+    				onetip += "0,";
+    			}else{
+	    			$(this).children().each(function(){
+	    				onetip += $(this).text()+",";
+	    			});
+	    		}
+    			htips += onetip.substring(0,onetip.length-1) + "],";
+    		});
+    		htips = htips.substring(0,htips.length-1)+"]";
+    		$("span[id^=vtip]").each(function(){
+    			if($(this).text().length == 0){
+    				vtips += "[0],";
+    			}else{
+    				vtips += "["+$(this).text().substring(0,($(this).text().length - 1))+"],";
+    			}
+    		});
+    		vtips = vtips.substring(0,vtips.length-1)+"]";
+    		data += "{ \"htips\":"+htips+",\"vtips\":"+vtips+"}";
     		
-    	}
+			$.ajax({
+				type: "post",
+				url: "http://localhost:8080/solve",
+				data: data,
+				dataType: "text",
+				contentType: "application/json; charset=utf-8",
+				success: function(data){
+					var arrayObj = eval(data);
+					/*<![CDATA[*/
+					for(var i = 0;i < arrayObj.length; i++){
+						for(var j = 0; j < arrayObj[i].length; j++){
+							$("#"+i+"-"+j).css("background-color",arrayObj[i][j] == 1?"grey":arrayObj[i][j] == 2?"white":"red");
+						}
+					}
+					/*]]>*/
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+				},
+			});
+		}
     </script>
 </html>
