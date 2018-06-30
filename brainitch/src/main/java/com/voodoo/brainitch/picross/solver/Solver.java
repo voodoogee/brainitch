@@ -170,9 +170,16 @@ public class Solver {
 			{5,1,4,2},{3,1,2,4,1},{4,6,1},{1,1,1,5,1,1,2},{2,1,2,1,1,4},
 			{2,1,1,1,5,1},{3,2,1,5,3},{1,2,3,1,1},{1,1,2,2,2},{1,2,3}
 		};
-		
 		Solver solver = new Solver(hTipNums, vTipNums);
 		solver.solve();
+	}
+
+	public Model gethModel() {
+		return hModel;
+	}
+
+	public Model getvModel() {
+		return vModel;
 	}
 }
 

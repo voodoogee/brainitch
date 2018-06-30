@@ -19,6 +19,4 @@ public class RequestModel {
 	public void setVtips(int[][] vtips) {
 		this.vtips = vtips;
 	}
-	
-	
 }
